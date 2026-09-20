@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Push to Docker Hub') {
             steps {
-                bat 'echo %DOCKER_CRED_PSW% | docker login -u %DOCKER_CRED_USR% --password-stdin'
+                bat 'echo %DOCKER_CRED_PSW%| docker login -u %DOCKER_CRED_USR% --password-stdin'
                 bat 'docker push %backrepo%:%BUILD_NUMBER%'
                 bat 'docker push %frontend%:%BUILD_NUMBER%'
             }
