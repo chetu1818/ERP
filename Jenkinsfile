@@ -26,13 +26,11 @@ pipeline {
         }
         stage('Run Containers') {
             steps {
-                // Stop and remove old containers to prevent port conflicts
-                bat 'docker rm -f idurar-backend || exit 0'
-                bat 'docker rm -f idurar-frontend || exit 0'
+                // Shut down any previously running containers from this compose file
+                bat 'docker-compose down || exit 0'
                 
-                // Start the new containers mapped to your local ports
-                bat 'docker run -d --name idurar-backend -p 8080:8080 %backrepo%:%BUILD_NUMBER%'
-                bat 'docker run -d --name idurar-frontend -p 3000:3000 %frontend%:%BUILD_NUMBER%'
+                // Start the new containers in detached mode
+                bat 'docker-compose up -d'
             }
         }
     }
