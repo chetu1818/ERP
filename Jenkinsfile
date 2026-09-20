@@ -24,6 +24,17 @@ pipeline {
                 bat 'docker push %frontend%:%BUILD_NUMBER%'
             }
         }
+        stage('Run Containers') {
+            steps {
+                // Stop and remove old containers to prevent port conflicts
+                bat 'docker rm -f idurar-backend || exit 0'
+                bat 'docker rm -f idurar-frontend || exit 0'
+                
+                // Start the new containers mapped to your local ports
+                bat 'docker run -d --name idurar-backend -p 8080:8080 %backrepo%:%BUILD_NUMBER%'
+                bat 'docker run -d --name idurar-frontend -p 3000:3000 %frontend%:%BUILD_NUMBER%'
+            }
+        }
     }
     post {
         always {
