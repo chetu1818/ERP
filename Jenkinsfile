@@ -34,9 +34,9 @@ pipeline {
                 bat 'docker rm -f idurar-backend || exit 0'
                 bat 'docker rm -f idurar-frontend || exit 0'
                 
-                // Start the new containers and inject the connection variables using -e
-                bat 'docker run -d --name idurar-backend -p 8080:8080 -e DATABASE_URI="%MONGO_URI%" %backrepo%:%BUILD_NUMBER%'
-                bat 'docker run -d --name idurar-frontend -p 3000:3000 -e REACT_APP_BACKEND_URL="%API_URL%" %frontend%:%BUILD_NUMBER%'
+                // Start the new containers and bind them to all network interfaces
+                bat 'docker run -d --name idurar-backend -p 8080:8080 -e HOST=0.0.0.0 -e DATABASE_URI="%MONGO_URI%" %backrepo%:%BUILD_NUMBER%'
+                bat 'docker run -d --name idurar-frontend -p 3000:3000 -e HOST=0.0.0.0 -e REACT_APP_BACKEND_URL="%API_URL%" %frontend%:%BUILD_NUMBER%'
             }
         }
     }
