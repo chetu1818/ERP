@@ -4,6 +4,10 @@ pipeline {
         DOCKER_CRED = credentials('docker-hub-credentials')
         backrepo = 'chetan1818/idurar-backend'
         frontend = 'chetan1818/idurar-frontend'
+        
+        // Define your connection strings here
+        MONGO_URI = 'your_mongodb_connection_string_here'
+        API_URL = 'http://localhost:8080'
     }
     stages {
         stage('Checkout code') {
@@ -26,11 +30,13 @@ pipeline {
         }
         stage('Run Containers') {
             steps {
-                // Shut down any previously running containers from this compose file
-                bat 'docker-compose down || exit 0'
+                // Stop and remove old containers to prevent port conflicts
+                bat 'docker rm -f idurar-backend || exit 0'
+                bat 'docker rm -f idurar-frontend || exit 0'
                 
-                // Start the new containers in detached mode
-                bat 'docker-compose up -d'
+                // Start the new containers and inject the connection variables using -e
+                bat 'docker run -d --name idurar-backend -p 8080:8080 -e DATABASE_URI="%MONGO_URI%" %backrepo%:%BUILD_NUMBER%'
+                bat 'docker run -d --name idurar-frontend -p 3000:3000 -e REACT_APP_BACKEND_URL="%API_URL%" %frontend%:%BUILD_NUMBER%'
             }
         }
     }
